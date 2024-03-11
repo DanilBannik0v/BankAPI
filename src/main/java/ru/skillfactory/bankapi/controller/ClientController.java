@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.skillfactory.bankapi.model.Client;
 import ru.skillfactory.bankapi.repository.ClientRepository;
+import ru.skillfactory.bankapi.service.ClientService;
 import ru.skillfactory.bankapi.service.ClientServiceImpl;
 
 import java.util.Arrays;
@@ -13,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/bank-api")
 public class ClientController {
-    private ClientServiceImpl clientServiceI;
+    private final ClientService clientService = new ClientServiceImpl();
 
     @Autowired
     private ClientRepository clientRepository;
@@ -39,7 +40,7 @@ public class ClientController {
 
     @PutMapping(value = "/update/{id}")
     public String updateClient(@PathVariable long id, @RequestBody Client client){
-        clientServiceI.updateClient(clientRepository, id, client);
+        clientService.updateClient(clientRepository, id, client);
         return "Client updated";
     }
 
@@ -64,7 +65,7 @@ public class ClientController {
     @PutMapping(value = "/takemoney/{id}")
     public String takeMoney(@PathVariable long id, @RequestBody String sumToTake){
         try {
-            clientServiceI.takeMoney(clientRepository,id,sumToTake);
+            clientService.takeMoney(clientRepository,id,sumToTake);
             return "Successfully (1) ";
         } catch (RuntimeException e){
             return "Insufficient funds (0) " + Arrays.toString(e.getStackTrace());
@@ -74,7 +75,7 @@ public class ClientController {
     @PutMapping(value = "/putmoney/{id}")
     public String putMoney(@PathVariable long id, @RequestBody String sumToPut){
         try {
-            clientServiceI.putMoney(clientRepository, id, sumToPut);
+            clientService.putMoney(clientRepository, id, sumToPut);
             return "Successfully (1) ";
         } catch (RuntimeException e){
             return "Error during operation (0) " + Arrays.toString(e.getStackTrace());
