@@ -3,21 +3,24 @@ package ru.skillfactory.bankapi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.skillfactory.bankapi.models.Client;
+import ru.skillfactory.bankapi.model.Client;
 import ru.skillfactory.bankapi.repository.ClientRepository;
+import ru.skillfactory.bankapi.service.ClientServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
 
 @RestController
+@RequestMapping("/bank-api")
 public class Controller {
-    
+    private ClientServiceImpl clientService;
+
     @Autowired
     private ClientRepository clientRepository;
 
     @GetMapping(value = "/")
     public String getPage(){
-        return "welcome";
+        return "/welcome";
     }
 
     @GetMapping(value = "/clients")
@@ -31,22 +34,20 @@ public class Controller {
         return "Client saved";
     }
 
-    @PutMapping(value = "update/{id}")
+    @PutMapping(value = "/update/{id}")
     public String updateClient(@PathVariable long id, @RequestBody Client client){
-        Client updatedClient = clientRepository.findById(id).get();
-        updatedClient.setBalance(client.getBalance());
-        clientRepository.save(updatedClient);
+        clientService.updateClient(clientRepository, id, client);
         return "Client updated";
     }
 
-    @DeleteMapping(value = "delete/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public String deleteClient(@PathVariable long id){
         Client deleteClient = clientRepository.findById(id).get();
         clientRepository.delete(deleteClient);
         return "Client with the id: " + id + " deleted";
     }
 
-    @GetMapping(value = "balance/{id}")
+    @GetMapping(value = "/balance/{id}")
     public String getBalance(@PathVariable long id){
         int balance = 0;
         try {
@@ -57,24 +58,20 @@ public class Controller {
         }
     }
 
-    @PutMapping(value = "takemoney/{id}")
+    @PutMapping(value = "/takemoney/{id}")
     public String takeMoney(@PathVariable long id, @RequestBody String sumToTake){
         try {
-            Client client = clientRepository.findById(id).get();
-            client.setBalance(client.getBalance() - Integer.parseInt(sumToTake));
-            clientRepository.save(client);
+            clientService.takeMoney(clientRepository,id,sumToTake);
             return "Successfully (1) ";
         } catch (RuntimeException e){
             return "Insufficient funds (0) " + Arrays.toString(e.getStackTrace());
         }
     }
 
-    @PutMapping(value = "putmoney/{id}")
+    @PutMapping(value = "/putmoney/{id}")
     public String putMoney(@PathVariable long id, @RequestBody String sumToPut){
         try {
-            Client client = clientRepository.findById(id).get();
-            client.setBalance(client.getBalance() + Integer.parseInt(sumToPut));
-            clientRepository.save(client);
+            clientService.putMoney(clientRepository, id, sumToPut);
             return "Successfully (1) ";
         } catch (RuntimeException e){
             return "Error during operation (0) " + Arrays.toString(e.getStackTrace());
