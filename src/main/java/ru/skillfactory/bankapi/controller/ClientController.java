@@ -12,11 +12,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bank-api")
-public class Controller {
-    private ClientServiceImpl clientService;
+public class ClientController {
+    private ClientServiceImpl clientServiceI;
 
     @Autowired
     private ClientRepository clientRepository;
+
+    public ClientController() {
+    }
 
     @GetMapping(value = "/")
     public String getPage(){
@@ -36,7 +39,7 @@ public class Controller {
 
     @PutMapping(value = "/update/{id}")
     public String updateClient(@PathVariable long id, @RequestBody Client client){
-        clientService.updateClient(clientRepository, id, client);
+        clientServiceI.updateClient(clientRepository, id, client);
         return "Client updated";
     }
 
@@ -61,7 +64,7 @@ public class Controller {
     @PutMapping(value = "/takemoney/{id}")
     public String takeMoney(@PathVariable long id, @RequestBody String sumToTake){
         try {
-            clientService.takeMoney(clientRepository,id,sumToTake);
+            clientServiceI.takeMoney(clientRepository,id,sumToTake);
             return "Successfully (1) ";
         } catch (RuntimeException e){
             return "Insufficient funds (0) " + Arrays.toString(e.getStackTrace());
@@ -71,7 +74,7 @@ public class Controller {
     @PutMapping(value = "/putmoney/{id}")
     public String putMoney(@PathVariable long id, @RequestBody String sumToPut){
         try {
-            clientService.putMoney(clientRepository, id, sumToPut);
+            clientServiceI.putMoney(clientRepository, id, sumToPut);
             return "Successfully (1) ";
         } catch (RuntimeException e){
             return "Error during operation (0) " + Arrays.toString(e.getStackTrace());
