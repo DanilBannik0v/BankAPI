@@ -19,9 +19,6 @@ public class ClientController {
     @Autowired
     private ClientRepository clientRepository;
 
-    public ClientController() {
-    }
-
     @GetMapping(value = "/")
     public String getPage(){
         return "/welcome";
