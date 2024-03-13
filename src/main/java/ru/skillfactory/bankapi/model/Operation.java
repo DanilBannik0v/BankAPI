@@ -22,7 +22,7 @@ public class Operation {
     @Column
     private long clientId;
     @Column
-    private int type;
+    private int type; //take 1, put 2, transferSend 3, transferReceive 4
     @Column
     private int sum;
     @Column

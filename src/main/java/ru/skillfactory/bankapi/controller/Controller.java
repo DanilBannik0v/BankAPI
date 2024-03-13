@@ -13,7 +13,6 @@ import ru.skillfactory.bankapi.service.OperationService;
 import ru.skillfactory.bankapi.service.OperationServiceImpl;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -63,7 +62,7 @@ public class Controller {
             balance = clientRepository.findById(clientId).get().getBalance();
             return String.valueOf(balance);
         } catch (RuntimeException e){
-            return "Error during operation (-1) " + Arrays.toString(e.getStackTrace());
+            return "Error during operation (-1) ";
         }
     }
 
@@ -74,7 +73,7 @@ public class Controller {
             operationService.saveOperation(operationRepository, clientId, 1, sum, LocalDate.now());
             return "Successfully (1) ";
         } catch (RuntimeException e){
-            return "Insufficient funds (0) " + Arrays.toString(e.getStackTrace());
+            return "Insufficient funds (0) ";
         }
     }
 
@@ -85,7 +84,19 @@ public class Controller {
             operationService.saveOperation(operationRepository, clientId, 2, sum, LocalDate.now());
             return "Successfully (1) ";
         } catch (RuntimeException e){
-            return "Error during operation (0) " + Arrays.toString(e.getStackTrace());
+            return "Error during operation (0) ";
+        }
+    }
+
+    @PutMapping(value = "/transfermoney/{senderId}/{receiverId}")
+    public String transferMoney(@PathVariable long senderId, @PathVariable long receiverId, @RequestBody String sum){
+        try {
+            clientService.transferMoney(clientRepository, senderId, receiverId, sum);
+            operationService.saveOperation(operationRepository, senderId, 3, sum, LocalDate.now());
+            operationService.saveOperation(operationRepository, receiverId, 4, sum, LocalDate.now());
+            return "Successfully (1) ";
+        } catch (RuntimeException e){
+            return "Insufficient funds (0) ";
         }
     }
 
@@ -105,7 +116,7 @@ public class Controller {
     }
 
     @GetMapping(value = "/operationsbetween/{clientId}")
-    public List<Operation> getOperationsBetween(@PathVariable long clientId, @RequestBody String dateAfter, @RequestBody String dateBefore){
-        return operationService.findOperationsBetween(operationRepository, clientId, dateAfter, dateBefore);
+    public List<Operation> getOperationsBetween(@PathVariable long clientId, @RequestBody String dates){
+        return operationService.findOperationsBetween(operationRepository, clientId, dates);
     }
 }

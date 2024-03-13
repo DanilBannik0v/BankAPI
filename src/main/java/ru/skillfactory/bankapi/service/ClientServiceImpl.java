@@ -1,6 +1,7 @@
 package ru.skillfactory.bankapi.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillfactory.bankapi.model.Client;
 import ru.skillfactory.bankapi.repository.ClientRepository;
 
@@ -13,6 +14,7 @@ public class ClientServiceImpl implements ClientService{
         clientRepository.save(updatedClient);
     }
 
+    @Transactional
     @Override
     public void takeMoney(ClientRepository clientRepository, long id, String sumToTake) {
         Client client = clientRepository.findById(id).get();
@@ -20,11 +22,28 @@ public class ClientServiceImpl implements ClientService{
         clientRepository.save(client);
     }
 
+    @Transactional
     @Override
     public void putMoney(ClientRepository clientRepository, long id, String sumToPut) {
         Client client = clientRepository.findById(id).get();
         client.setBalance(client.getBalance() + Integer.parseInt(sumToPut));
         clientRepository.save(client);
+    }
+
+    @Transactional
+    @Override
+    public void transferMoney(ClientRepository clientRepository, long senderId, long receiverId, String sumToTransfer) {
+        Client sender = clientRepository.findById(senderId).get();
+        if (sender.getBalance() > Integer.parseInt(sumToTransfer)) {
+            Client receiver = clientRepository.findById(receiverId).get();
+
+            sender.setBalance(sender.getBalance() - Integer.parseInt(sumToTransfer));
+            clientRepository.save(sender);
+            receiver.setBalance(receiver.getBalance() + Integer.parseInt(sumToTransfer));
+            clientRepository.save(receiver);
+        } else {
+            throw new RuntimeException();
+        }
     }
 }
 

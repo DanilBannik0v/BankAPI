@@ -11,6 +11,7 @@ import java.util.List;
 @Service
 public class OperationServiceImpl implements OperationService{
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private static final String SPACE = " ";
 
     @Override
     public void saveOperation(OperationRepository operationRepository, long clientId, int type, String sum, LocalDate date) {
@@ -20,28 +21,30 @@ public class OperationServiceImpl implements OperationService{
     @Override
     public List<Operation> findOperationsAfter(OperationRepository operationRepository, long clientId, String date) {
         LocalDate localDate = LocalDate.parse(date, formatter);
-        return operationRepository.findById(clientId)
+        return operationRepository.findAll()
                 .stream()
-                .filter(operation -> operation.getLocalDate().isAfter(localDate))
+                .filter(operation -> operation.getClientId() == clientId && operation.getLocalDate().isAfter(localDate))
                 .toList();
     }
 
     @Override
     public List<Operation> findOperationsBefore(OperationRepository operationRepository, long clientId, String date) {
         LocalDate localDate = LocalDate.parse(date, formatter);
-        return operationRepository.findById(clientId)
+        return operationRepository.findAll()
                 .stream()
-                .filter(operation -> operation.getLocalDate().isBefore(localDate))
+                .filter(operation -> operation.getClientId() == clientId && operation.getLocalDate().isBefore(localDate))
                 .toList();
     }
 
     @Override
-    public List<Operation> findOperationsBetween(OperationRepository operationRepository, long clientId, String dateAfter,  String dateBefore) {
-        LocalDate localDateAfter = LocalDate.parse(dateAfter, formatter);
-        LocalDate localDateBefore = LocalDate.parse(dateBefore, formatter);
-        return operationRepository.findById(clientId)
+    public List<Operation> findOperationsBetween(OperationRepository operationRepository, long clientId, String dates) {
+        LocalDate dateAfter = LocalDate.parse(dates.split(SPACE)[0], formatter);
+        LocalDate dateBefore = LocalDate.parse(dates.split(SPACE)[1], formatter);
+        return operationRepository.findAll()
                 .stream()
-                .filter(operation -> operation.getLocalDate().isAfter(localDateAfter) && operation.getLocalDate().isBefore(localDateBefore))
+                .filter(operation -> operation.getClientId() == clientId &&
+                        operation.getLocalDate().isAfter(dateAfter) &&
+                        operation.getLocalDate().isBefore(dateBefore))
                 .toList();
     }
 }
