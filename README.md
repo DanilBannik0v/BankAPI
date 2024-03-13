@@ -2,6 +2,6 @@
 ___
 ## Clients
 ![img.png](src/main/resources/photos/clients.png)
-## Operation
+## Operations
 ![img_1.png](src/main/resources/photos/operations.png)
 

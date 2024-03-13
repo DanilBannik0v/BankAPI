@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -15,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Table(name="operations")
 public class Operation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -25,12 +26,12 @@ public class Operation {
     @Column
     private int sum;
     @Column
-    private Date date;
+    private LocalDate localDate;
 
-    public Operation(long clientId, int type, int sum, Date date) {
+    public Operation(long clientId, int type, int sum, LocalDate localDate) {
         this.clientId = clientId;
         this.type = type;
         this.sum = sum;
-        this.date = date;
+        this.localDate = localDate;
     }
 }
